@@ -1,9 +1,5 @@
-# Terraform
-terraform/.terraform/
-terraform/.terraform.lock.hcl
-*.tfstate
-*.tfstate.*
-*.tfvars
+# Terraform - entire folder excluded
+terraform/
 
 # Auto-generated Lambda zip files
 terraform/modules/eventbridge/*.zip

@@ -1,0 +1,48 @@
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+
+# Auto-generated Lambda zip files
+terraform/modules/eventbridge/*.zip
+
+# Data files (380MB+ — users download from Kaggle)
+data/
+
+# Lambda response files
+response.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Docker
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# AWS
+.env
+credentials
+.aws/
+
+# Misc
+*.tmp
+*.bak

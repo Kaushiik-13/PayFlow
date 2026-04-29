@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayFlow — Anomaly Detection Pipeline</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>PayFlow</h1>
+        <p>Payment Transaction Anomaly Detection Pipeline</p>
+    </header>
+
+    <main>
+        <section id="upload-panel" class="panel">
+            <h2>Upload Data</h2>
+            <div id="drop-zone" class="drop-zone">
+                <p>Drag &amp; drop your file here</p>
+                <p class="formats">Supported: CSV, Parquet, JSON</p>
+                <input type="file" id="file-input" accept=".csv,.parquet,.json">
+                <button id="upload-btn" disabled>Upload</button>
+            </div>
+            <div id="upload-progress" class="hidden">
+                <div class="progress-bar"><div id="progress-fill"></div></div>
+                <span id="progress-text">0%</span>
+            </div>
+            <div id="upload-status" class="hidden"></div>
+        </section>
+
+        <section id="status-panel" class="panel">
+            <h2>Pipeline Status</h2>
+            <div class="steps">
+                <div class="step" id="step-upload">
+                    <div class="step-icon">&#11014;</div>
+                    <div class="step-label">Upload</div>
+                    <div class="step-status">pending</div>
+                </div>
+                <div class="step" id="step-etl">
+                    <div class="step-icon">&#9881;</div>
+                    <div class="step-label">Glue ETL</div>
+                    <div class="step-status">pending</div>
+                </div>
+                <div class="step" id="step-crawler">
+                    <div class="step-icon">&#128203;</div>
+                    <div class="step-label">Crawlers</div>
+                    <div class="step-status">pending</div>
+                </div>
+                <div class="step" id="step-anomaly">
+                    <div class="step-icon">&#128269;</div>
+                    <div class="step-label">Anomaly Detection</div>
+                    <div class="step-status">pending</div>
+                </div>
+            </div>
+            <button id="refresh-status-btn">Refresh Status</button>
+        </section>
+
+        <section id="results-panel" class="panel hidden">
+            <h2>Results</h2>
+            <div class="summary-cards">
+                <div class="card"><span id="res-total" class="big-number">-</span><label>Records Scored</label></div>
+                <div class="card"><span id="res-anomalies" class="big-number">-</span><label>Anomalies Detected</label></div>
+                <div class="card"><span id="res-rate" class="big-number">-</span><label>Anomaly Rate</label></div>
+                <div class="card"><span id="res-source" class="big-number">-</span><label>Source File</label></div>
+            </div>
+            <h3>Top Anomalies</h3>
+            <div id="anomalies-table-container">
+                <table id="anomalies-table">
+                    <thead><tr id="anomalies-header"></tr></thead>
+                    <tbody id="anomalies-body"></tbody>
+                </table>
+            </div>
+            <button id="download-csv-btn">Download Full CSV</button>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

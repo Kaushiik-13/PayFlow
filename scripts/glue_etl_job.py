@@ -1,5 +1,6 @@
 import sys
 import json
+import boto3
 from awsglue.transforms import *
 from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
@@ -24,16 +25,16 @@ raw_bucket = args['RAW_BUCKET']
 clean_bucket = args['CLEAN_BUCKET']
 override_mappings = json.loads(args.get('SOURCE_CONFIG', '{}'))
 
-# ─── Step 1: Discover data files in the raw bucket ───
-hadoop_conf = sc._jsc.hadoopConfiguration()
-fs = sc._jvm.org.apache.hadoop.fs.FileSystem.get(sc._jsc.hadoopConfiguration())
-raw_path = sc._jvm.org.apache.hadoop.fs.Path(f"s3://{raw_bucket}/")
+# ─── Step 1: Discover data files in the raw bucket using boto3 ───
+s3_client = boto3.client('s3')
+paginator = s3_client.get_paginator('list_objects_v2')
 data_files = []
 
-for f in fs.listStatus(raw_path):
-    name = f.getPath().getName()
-    if name.endswith(('.csv', '.parquet', '.json')):
-        data_files.append(f.getPath().toString())
+for page in paginator.paginate(Bucket=raw_bucket):
+    for obj in page.get('Contents', []):
+        name = obj['Key']
+        if name.endswith(('.csv', '.parquet', '.json')):
+            data_files.append(f"s3://{raw_bucket}/{name}")
 
 if not data_files:
     raise ValueError(f"No data files (.csv/.parquet/.json) found in s3://{raw_bucket}/")
@@ -261,8 +262,11 @@ else:
         'partition_columns': ['year', 'month', 'region'],
         'record_count': clean_count
     }
-    spark.sparkContext.parallelize([json.dumps(schema_info)]).saveAsTextFile(
-        f"s3://{clean_bucket}/clean/_schema.json"
+    s3_client.put_object(
+        Bucket=clean_bucket,
+        Key='clean/_schema.json',
+        Body=json.dumps(schema_info, indent=2),
+        ContentType='application/json'
     )
 
 print("ETL job complete.")

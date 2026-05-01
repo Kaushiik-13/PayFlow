@@ -34,8 +34,8 @@ def _read_schema(bucket):
 def _build_column_list(schema):
     columns = set()
     roles = schema.get('column_roles', {})
-    for canonical, source in roles.items():
-        columns.add(source)
+    for canonical in roles.keys():
+        columns.add(canonical)
     features = schema.get('detected_features', [])
     columns.update(features)
     columns.update(['year', 'month', 'region', 'day'])
@@ -154,9 +154,9 @@ def lambda_handler(event, context):
 
         print(f"Anomalies detected: {df['is_anomaly'].sum():,}")
 
-        scored_columns = ['TransactionID', 'amount', 'anomaly_score', 'is_anomaly',
+        scored_columns = ['transaction_id', 'amount', 'anomaly_score', 'is_anomaly',
                           'geo_flag', 'transaction_hour', 'amount_bucket',
-                          'txn_velocity', 'ProductCD', 'year', 'month', 'day', 'region']
+                          'txn_velocity', 'product_code', 'year', 'month', 'day', 'region']
         available_scored = [c for c in scored_columns if c in df.columns]
         for core_col in ['anomaly_score', 'is_anomaly', 'year', 'month', 'region']:
             if core_col not in available_scored and core_col in df.columns:
@@ -180,9 +180,9 @@ def lambda_handler(event, context):
         print(f"Wrote {len(df_scored):,} scored records across partitions.")
 
         top_anomalies = df_scored[df_scored['is_anomaly'] == 1].nlargest(1000, 'anomaly_score')
-        top_cols = [c for c in ['TransactionID', 'amount', 'anomaly_score',
+        top_cols = [c for c in ['transaction_id', 'amount', 'anomaly_score',
                                   'geo_flag', 'transaction_hour', 'amount_bucket',
-                                  'txn_velocity', 'ProductCD'] if c in top_anomalies.columns]
+                                  'txn_velocity', 'product_code'] if c in top_anomalies.columns]
         top_anomalies = top_anomalies[top_cols]
 
         csv_buffer = io.StringIO()

@@ -1,4 +1,4 @@
-const API_BASE = '';
+const API_BASE = 'https://4c6dzan5xb.execute-api.ap-south-1.amazonaws.com/prod';
 
 const dropZone = document.getElementById('drop-zone');
 const fileInput = document.getElementById('file-input');
